@@ -15,6 +15,16 @@
  
  ∙npm request
  
+### 실행방법
+1. git clone URL
+
+2. npm install request, cors, express, cheerio..
+
+3. setting port
+
+4. node run
+ 
+ 
 ### API List
  ∙Kakao Maps API
  
