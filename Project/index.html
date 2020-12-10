@@ -1,0 +1,163 @@
+<!-- 교통사고 api w5xMBEEKb%2FI1dghq%2B71ayasUK2%2FeWhQkyhcqfDRSzJ%2FHYFn9Jtm%2BuxF%2FYwaaGGlj-->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+    <title>Example of map Grid</title>
+    <script src="//code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+    
+    <div id="map" style="width:100%;height:600px;"></div>  
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f880efcf9cace85d145b77fb0facdf5c&libraries=services,clusterer,drawing"></script>
+    
+
+    <script type = 'text/javascript'>    
+        
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+        mapOption = { 
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+        var bounds = new kakao.maps.LatLngBounds();
+       
+        //
+        
+        var to = "";
+        var from = "";
+        var tox=1;
+        var toy=1;
+        var fromx=1;
+        var fromy=1;
+        var points=[];
+        var markx=[];
+        var marky=[];
+        $(document).ready(function (){
+            $('#submitz').click(function () {
+                $.ajax({
+                    url: 'http://localhost:8080/login',
+                    method : 'POST',
+                    data: {from : $('#from').val(), to: $('#to').val()},
+                    async : false,
+                    dataType: 'json',
+                    success : function(result){
+                        if(result){
+                            //alert(JSON.stringify(result.result));
+                            Set_Return(result.result);
+                            //$('#post_output').html(result.result);
+                        }
+                    }
+
+                });
+                return false;
+            });
+           // alert(gbl_data);
+        });
+        $(document).ready(function (){
+            $('#plusmarker').click(function () {
+                $.ajax({
+                    url: 'http://localhost:8080/param',
+                    method : 'POST',
+                    data: {from : $('#from').val(), to: $('#to').val()},
+                    async : false,
+                    dataType: 'json',
+                    success : function(result){
+                        if(result){
+                            alert("완료");
+                            Plus_mark(result.result);
+                            //$('#post_output').html(result.result);
+                        }
+                    }
+
+                });
+                return false;
+            });
+           // alert(gbl_data);
+        });
+       
+        var tocall = function(result,status){
+            if(status == kakao.maps.services.Status.OK){
+                console.log(result[0].y);
+                console.log(result[0].x);
+                tox=result[0].x;
+                toy=result[0].y;
+                points.push(new kakao.maps.LatLng(toy,tox));
+            }
+        };
+        var fromcall = function(result,status){
+            if(status == kakao.maps.services.Status.OK){
+                console.log(result[0].y);
+                console.log(result[0].x);
+                fromx=result[0].x;
+                fromy=result[0].y;
+                points.push(new kakao.maps.LatLng(fromy,fromx));
+                var i, marker;
+                 for(i = 0; i<points.length;i++){
+                 marker =     new kakao.maps.Marker({ position : points[i] ,text : "hi"});
+                marker.setMap(map);
+                bounds.extend(points[i]);
+                }
+                setBounds();
+            }
+        };
+  
+        function Plus_mark(data){
+            var string = data.split('\n');
+            for(var i =0;i<string.length;i++)
+            {
+                var temp = string[i].split('-');
+                markx.push(temp[0]);
+                marky.push(temp[1]);
+            }
+            //사고다발지 마크 좌표값 다 넣음
+            //마크를 넣음.
+            var imageSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0kp0l3kReWX61nC3AOaddjzqPo3hnEqPmhQ&usqp=CAU"; 
+            var position = [];
+            for(var i =0;i<string.length;i++)
+            {
+                position.push(new kakao.maps.LatLng(markx[i],marky[i]));
+                var imageSize = new kakao.maps.Size(24, 35); 
+                //alert(position);
+                var markerImage = new kakao.maps.MarkerImage(imageSrc,imageSize);
+
+                var marker = new kakao.maps.Marker({
+                    map:map,
+                    position : position[i],
+                    image : markerImage
+                });
+            }
+        }
+
+
+        function Set_Return(data){
+            var temp = data.split('-');
+            to = temp[0];
+            from = temp[1];            
+            geocoder.addressSearch(to,tocall);
+            geocoder.addressSearch(from,fromcall);
+            //맵 다시 그리기까지 완료
+            //alert(JSON.stringify(to + from));
+        }
+        function setBounds(){
+            console.log(bounds);
+            map.setBounds(bounds);
+            
+        }
+       
+
+        //
+    </script>
+    <form>
+        <input type = "text" id = "from" size = "12" value = "목적지"><br/>
+        <input type = "text" id = "to" size = "12" value = "도착지"><br/>
+        <button id = 'submitz' onsubmit="return false">submit</button>
+        <button id = 'plusmarker' onsubmit="return false">plusmark</button>
+    </form>
+    
+</body>
+</html>
+</document>
