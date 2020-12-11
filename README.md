@@ -24,6 +24,19 @@
  
  ∙교통사고정보시스템 API
  
+### Local 실행방법
+
+1. git clone URL
+
+2. npm install  express, cheerio, request, cors
+
+3. setting port, get API service key (kakao, taas)
+
+4. node run
+ 
+-----input data : city(spacebar)gugun
+
+ 
 ### How to develop this project
  
  ∙위 프로젝트를 fork 해주세요.

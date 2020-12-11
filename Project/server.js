@@ -11,8 +11,8 @@ const { fstat } = require("fs");
 const { response } = require("express");
 let app = express();
 process.setMaxListeners(50);
-app.listen(8080, function(){
-    console.log("App is running on port 8080");
+app.listen(23023, function(){
+    console.log("App is running on port 23023");
 });
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -459,7 +459,9 @@ function tmzoneaccident(sido, gugun){
     console.log(manytmzoneaccident)  
     });}   
 //tmzoneaccident(50,110)
-
+process.on('uncaughtException',function(err){
+    console.error(err);
+})
 //test
 /*
 var url = 'http://taas.koroad.or.kr/data/rest/frequentzone/pdestrians/jaywalking?authKey=su7cOd9Z8gTA4GthqTi4FZw7rJ9zc8Ov%2BRjpRMsuS3j%2FfG5Dbft9sKNp5v1HHw%2FB&searchYearCd=2018&sido=11&gugun=440';
